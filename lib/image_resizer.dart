@@ -7,8 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pasteboard/pasteboard.dart';
 
-// import 'image_paster_web.dart';
-
 class ImageResizer extends StatefulWidget {
   ImageResizer({super.key}) {}
 
@@ -17,9 +15,6 @@ class ImageResizer extends StatefulWidget {
 }
 
 class _ImageResizerState extends State<ImageResizer> {
-  // late ImagePaster _paster;
-  late StreamSubscription _pasteSub;
-
   ui.Image? _pastedImage;
   Uint8List? _pastedBytes;
 
@@ -31,15 +26,11 @@ class _ImageResizerState extends State<ImageResizer> {
 
   @override
   void initState() {
-    // _paster = ImagePaster();
-    // _pasteSub = _paster.onPaste.listen(_onImagePaste);
     super.initState();
   }
 
   @override
   void dispose() {
-    // _pasteSub.cancel();
-    // _paster.dispose();
     super.dispose();
   }
 
