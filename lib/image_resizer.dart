@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:pasteboard/pasteboard.dart';
 
 // import 'image_paster_web.dart';
 
@@ -55,6 +56,8 @@ class _ImageResizerState extends State<ImageResizer> {
     });
   }
 
+  static const pasteMeta = SingleActivator(LogicalKeyboardKey.keyV, meta: true);
+
   Widget _buildImageModifiers(ui.Image img) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -74,36 +77,59 @@ class _ImageResizerState extends State<ImageResizer> {
     );
   }
 
+  Future _onPasteEvent() async {
+    final clipData = await Pasteboard.image;
+    if (clipData != null) {
+      _onImagePaste(clipData);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Focus(
-      autofocus: true,
-      child: Builder(
-        builder: (context) {
-          if (_pastedBytes != null) {
-            return Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (_pastedImage != null) ...[
-                  _buildImageModifiers(_pastedImage!),
-                ],
-                Expanded(child: Image.memory(_pastedBytes!)),
-                Expanded(
-                  child: InkWell(
-                    onTap: () async {},
-                    child: Image.memory(_resizedBytes!),
-                  ),
-                ),
-              ],
-            );
-          } else {
-            return const Center(
-              child: Text('Paste an image from the clipboard'),
-            );
-          }
+    return Shortcuts(
+      shortcuts: const {
+        pasteMeta: PasteIntent(),
+      },
+      child: Actions(
+        actions: {
+          PasteIntent: CallbackAction<PasteIntent>(
+            onInvoke: (e) => _onPasteEvent(),
+          ),
         },
+        child: Focus(
+          autofocus: true,
+          child: Builder(
+            builder: (context) {
+              if (_pastedBytes != null) {
+                return Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (_pastedImage != null) ...[
+                      _buildImageModifiers(_pastedImage!),
+                    ],
+                    Expanded(child: Image.memory(_pastedBytes!)),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () async {},
+                        child: Image.memory(_resizedBytes!),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return const Center(
+                  child: Text('Paste an image from the clipboard'),
+                );
+              }
+            },
+          ),
+        ),
       ),
     );
   }
+}
+
+class PasteIntent extends Intent {
+  const PasteIntent();
 }
