@@ -75,7 +75,13 @@ class _StringTransformationsState extends State<StringTransformations> {
     return buf.toString();
   }
 
-  static String _toMD5(String x) => md5.convert(utf8.encode(x)).toString();
+  static String _toMD5(String x) {
+    if (x.isEmpty) {
+      return '';
+    }
+
+    return md5.convert(utf8.encode(x)).toString();
+  }
 
   String get _output {
     final transforms = _selectedTransforms;
