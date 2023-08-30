@@ -44,20 +44,20 @@ class MyApp extends StatelessWidget {
                     return Sidebar(
                       navs: const [
                         NavigationListTile(
-                          route: Routes.imageResizer,
-                          title: Text('Image Resizer'),
-                        ),
-                        NavigationListTile(
-                          route: Routes.stringTransformations,
-                          title: Text('String Transforms'),
-                        ),
-                        NavigationListTile(
                           route: Routes.hashes,
                           title: Text('Hashes'),
                         ),
                         NavigationListTile(
+                          route: Routes.imageResizer,
+                          title: Text('Image Resizer'),
+                        ),
+                        NavigationListTile(
                           route: Routes.regexTester,
                           title: Text('Regex'),
+                        ),
+                        NavigationListTile(
+                          route: Routes.stringTransformations,
+                          title: Text('String Transforms'),
                         ),
                       ],
                     );
