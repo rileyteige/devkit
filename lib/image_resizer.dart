@@ -1,23 +1,78 @@
 import 'dart:io';
 import 'dart:async';
-import 'dart:math';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:devkit/toast.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:image/image.dart' as image;
 import 'package:path_provider/path_provider.dart';
 
 class ImageResizer extends StatefulWidget {
-  ImageResizer({super.key}) {}
+  const ImageResizer({super.key});
 
   @override
   State<ImageResizer> createState() => _ImageResizerState();
+}
+
+extension Validation on Map<String, dynamic> {
+  void verifyExistsNotNull(List<String> keys) {
+    for (final key in keys) {
+      if (!containsKey(key)) {
+        throw ArgumentError('Key "$key" was not found', key);
+      }
+    }
+  }
+}
+
+class ResizeArgs {
+  final Uint8List image;
+  final int targetWidth;
+  final int targetHeight;
+
+  ResizeArgs(
+      {required this.image,
+      required this.targetWidth,
+      required this.targetHeight}) {
+    if (image.isEmpty) {
+      throw ArgumentError('Must be non-empty', 'image');
+    }
+
+    RangeError.checkNotNegative(targetWidth, 'targetWidth');
+    RangeError.checkNotNegative(targetHeight, 'targetHeight');
+  }
+
+  factory ResizeArgs.fromMap(Map<String, dynamic> args) {
+    args.verifyExistsNotNull(['image', 'targetWidth', 'targetHeight']);
+
+    return ResizeArgs(
+      image: args['image'] as Uint8List,
+      targetWidth: args['targetWidth'] as int,
+      targetHeight: args['targetHeight'] as int,
+    );
+  }
+}
+
+Future<Uint8List?> _resizeImage(Map<String, dynamic> argMap) async {
+  final args = ResizeArgs.fromMap(argMap);
+
+  final decoded = image.decodeImage(args.image);
+  if (decoded == null) {
+    debugPrint('_resizeImage - Failed to deocde image');
+    return null;
+  }
+
+  final scaled = image.copyResize(
+    decoded,
+    width: args.targetWidth,
+    height: args.targetHeight,
+    interpolation: image.Interpolation.cubic,
+  );
+
+  return image.encodePng(scaled);
 }
 
 class _ImageResizerState extends State<ImageResizer>
@@ -30,6 +85,7 @@ class _ImageResizerState extends State<ImageResizer>
   final _resizedHeightCtrl = TextEditingController();
   final _resizedWidthCtrl = TextEditingController();
   Uint8List? _resizedBytes;
+  var _isResizing = false;
 
   final focusNode = FocusNode();
   @override
@@ -42,12 +98,12 @@ class _ImageResizerState extends State<ImageResizer>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -89,21 +145,24 @@ class _ImageResizerState extends State<ImageResizer>
   int get _resizedSize => _resizedBytes?.length ?? 0;
 
   Future _resize() async {
-    debugPrint('_resize');
-    if (_pastedBytes == null) return;
-    final decoded = image.decodeImage(_pastedBytes!);
-    if (decoded == null) return;
+    final pastedBytes = _pastedBytes;
+    if (pastedBytes == null) return;
 
-    final scaled = image.copyResize(
-      decoded,
-      width: _resizedWidth,
-      height: _resizedHeight,
-      interpolation: image.Interpolation.cubic,
-    );
-
-    final scaledBytes = image.encodePng(scaled);
-
-    setState(() => _resizedBytes = scaledBytes);
+    try {
+      setState(() => _isResizing = true);
+      final resizedImage = await compute(_resizeImage, {
+        'image': pastedBytes,
+        'targetWidth': _resizedWidth,
+        'targetHeight': _resizedHeight,
+      });
+      if (resizedImage != null) {
+        setState(() => _resizedBytes = resizedImage);
+      } else {
+        debugPrint('_resizeImage returned null');
+      }
+    } finally {
+      setState(() => _isResizing = false);
+    }
   }
 
   void _clampDimensions(int maxDim) {
@@ -122,7 +181,7 @@ class _ImageResizerState extends State<ImageResizer>
       });
 
       _resize();
-    } else {
+    } else if (height > width && height > maxDim) {
       final newWidth = _aspectWidth(maxDim, aspectRatio);
       setState(() {
         _resizedWidth = newWidth;
@@ -281,16 +340,20 @@ class _ImageResizerState extends State<ImageResizer>
                             ConstrainedBox(
                               constraints: const BoxConstraints.expand(),
                               child: InkWell(
-                                onTap: () async {
-                                  final directory =
-                                      (await getApplicationDocumentsDirectory())
-                                          .path;
-                                  final imagePath = '$directory/image.png';
-                                  await File(imagePath)
-                                      .writeAsBytes(_resizedBytes!.toList());
-                                  await Pasteboard.writeFiles([imagePath]);
-                                  Toast.toast('Copied to clipboard');
-                                },
+                                onTap: _isResizing
+                                    ? null
+                                    : () async {
+                                        final directory =
+                                            (await getApplicationDocumentsDirectory())
+                                                .path;
+                                        final imagePath =
+                                            '$directory/image.png';
+                                        await File(imagePath).writeAsBytes(
+                                            _resizedBytes!.toList());
+                                        await Pasteboard.writeFiles(
+                                            [imagePath]);
+                                        Toast.toast('Copied to clipboard');
+                                      },
                                 child: Stack(
                                   children: [
                                     Center(
@@ -324,6 +387,14 @@ class _ImageResizerState extends State<ImageResizer>
                                 ),
                               ),
                             ),
+                            if (_isResizing) ...[
+                              ConstrainedBox(
+                                constraints: const BoxConstraints.expand(),
+                                child: Container(
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),
