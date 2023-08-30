@@ -1,4 +1,5 @@
 import 'package:another_flushbar/flushbar.dart';
+import 'package:devkit/main.dart';
 import 'package:flutter/material.dart';
 
 class Toast {
@@ -13,9 +14,12 @@ class Toast {
 
   static void toast(String message) {
     debugPrint('Toast - $message');
+    final context = MyApp.navigatorKey.currentContext;
+    if (context == null) return;
+
     Flushbar(
       message: message,
       duration: const Duration(seconds: 3),
-    ).show(_context);
+    ).show(context);
   }
 }

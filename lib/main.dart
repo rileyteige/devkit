@@ -1,13 +1,17 @@
-import 'package:devkit/toast.dart';
 import 'package:flutter/material.dart';
 
-import 'image_resizer.dart';
+import 'routes.dart';
+import 'sidebar.dart';
+import 'toast.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey(debugLabel: 'Main Navigator');
+
   const MyApp({super.key});
 
   // This widget is the root of your application.
@@ -37,32 +41,42 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Riley\'s Dev Kit'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  final String title;
-
-  const MyHomePage({super.key, required this.title});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    Toast.init(context);
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: const Center(
-        child: ImageResizer(),
-      ),
+      navigatorKey: navigatorKey,
+      initialRoute: Routes.initial,
+      routes: Routes.all,
+      builder: (context, child) {
+        return Builder(
+          builder: (context) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text("Riley's Dev Kit"),
+                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              ),
+              body: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Builder(builder: (context) {
+                    return Sidebar(
+                      navs: const [
+                        NavigationListTile(
+                          route: Routes.imageResizer,
+                          title: Text('Image Resizer'),
+                        ),
+                        NavigationListTile(
+                          route: Routes.stringTransformations,
+                          title: Text('String Transforms'),
+                        ),
+                      ],
+                    );
+                  }),
+                  const VerticalDivider(width: 2),
+                  if (child != null) Expanded(child: child),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
