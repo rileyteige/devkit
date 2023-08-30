@@ -399,6 +399,9 @@ class _ImageResizerState extends State<ImageResizer>
                         ),
                       ),
                       Builder(builder: (context) {
+                        if (_isResizing) {
+                          return const Text('Resizing...');
+                        }
                         if (_resizedWidth == null || _pastedImage == null) {
                           return const Text('No Image');
                         }
