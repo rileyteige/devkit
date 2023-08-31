@@ -69,7 +69,6 @@ class _RegexTesterState extends State<RegexTester> {
         color: Theme.of(context).primaryColorLight,
       ),
     ));
-    children.add(const TextSpan(text: '\n'));
 
     if (match.groupNames.isNotEmpty) {
       for (var name in match.groupNames) {
@@ -79,11 +78,13 @@ class _RegexTesterState extends State<RegexTester> {
     } else {
       for (var i = 1; i < match.groupCount + 1; i++) {
         final group = match.group(i);
-        children.add(TextSpan(text: '$i: $group'));
+        children.add(TextSpan(text: '$i: $group\n'));
       }
     }
 
-    return SelectableText.rich(TextSpan(children: children));
+    return SelectableText.rich(TextSpan(
+      children: children.intersperse(TextSpan(text: '\n')).toList(),
+    ));
   }
 
   Widget _renderMatches(Iterable<RegExpMatch> matches) {
