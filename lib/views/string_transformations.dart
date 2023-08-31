@@ -21,7 +21,15 @@ enum StringTransformation {
   lower,
   crazy,
   md5,
+  singleLine,
 }
+
+Set<StringTransformation> exclusiveTransforms = {
+  StringTransformation.upper,
+  StringTransformation.lower,
+  StringTransformation.crazy,
+  StringTransformation.md5,
+};
 
 extension Sets on Set<StringTransformation> {
   void toggle(StringTransformation x) {
@@ -50,10 +58,13 @@ class _StringTransformationsState extends State<StringTransformations> {
         StringTransformation.lower => _toLower,
         StringTransformation.crazy => _toCrazy,
         StringTransformation.md5 => _toMD5,
+        StringTransformation.singleLine => _toSingleLine,
       };
 
   static String _toLower(String x) => x.toLowerCase();
   static String _toUpper(String x) => x.toUpperCase();
+  static String _toSingleLine(String x) =>
+      x.replaceAll('\r\n', '').replaceAll('\n', '');
   static String _toCrazy(String x) {
     StringBuffer buf = StringBuffer();
 
@@ -109,7 +120,7 @@ class _StringTransformationsState extends State<StringTransformations> {
               onSelected(t);
             } else if (newValue) {
               setState(() {
-                _selectedTransforms.clear();
+                _selectedTransforms.removeAll(exclusiveTransforms);
                 _selectedTransforms.add(t);
               });
             } else {
@@ -124,6 +135,12 @@ class _StringTransformationsState extends State<StringTransformations> {
         chip('Upper', StringTransformation.upper),
         chip('Crazy', StringTransformation.crazy),
         chip('MD5', StringTransformation.md5),
+        chip(
+          'Single-Line',
+          StringTransformation.singleLine,
+          onSelected: (_) => setState(() =>
+              _selectedTransforms.toggle(StringTransformation.singleLine)),
+        ),
       ].intersperse(const SizedBox(width: 8)).toList(),
     );
   }
