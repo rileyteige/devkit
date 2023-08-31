@@ -63,8 +63,14 @@ class _StringTransformationsState extends State<StringTransformations> {
 
   static String _toLower(String x) => x.toLowerCase();
   static String _toUpper(String x) => x.toUpperCase();
-  static String _toSingleLine(String x) =>
-      x.replaceAll('\r\n', '').replaceAll('\n', '');
+  static String _toSingleLine(String x) {
+    final buf = StringBuffer();
+    for (final line in x.split(RegExp('(\r)?\n+'))) {
+      buf.write(line.trim());
+    }
+    return buf.toString();
+  }
+
   static String _toCrazy(String x) {
     StringBuffer buf = StringBuffer();
 
