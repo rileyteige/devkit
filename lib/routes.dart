@@ -1,8 +1,9 @@
-import 'package:devkit/views/image_resizer.dart';
-import 'package:devkit/views/regex_tester.dart';
 import 'package:flutter/material.dart';
 
 import 'views/checksums.dart';
+import 'views/generators.dart';
+import 'views/image_resizer.dart';
+import 'views/regex_tester.dart';
 import 'views/string_transformations.dart';
 
 class Routes {
@@ -13,6 +14,7 @@ class Routes {
   static const String stringTransformations = '/StringTransformations';
   static const String checksums = '/Checksums';
   static const String regexTester = '/RegexTester';
+  static const String generators = '/Generators';
 
   static Route onGenerateRoute(RouteSettings settings) {
     final name = settings.name;
@@ -26,6 +28,7 @@ class Routes {
         stringTransformations => const StringTransformations(),
         checksums => const Checksums(),
         regexTester => const RegexTester(),
+        generators => const Generators(),
         _ => Center(child: Text('Route not found: $name')),
       },
     );
