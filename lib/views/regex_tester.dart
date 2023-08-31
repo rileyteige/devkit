@@ -83,7 +83,7 @@ class _RegexTesterState extends State<RegexTester> {
     }
 
     return SelectableText.rich(TextSpan(
-      children: children.intersperse(TextSpan(text: '\n')).toList(),
+      children: children.intersperse(const TextSpan(text: '\n')).toList(),
     ));
   }
 
