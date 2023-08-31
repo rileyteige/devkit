@@ -1,9 +1,9 @@
-import 'package:devkit/image_resizer.dart';
-import 'package:devkit/regex_tester.dart';
+import 'package:devkit/views/image_resizer.dart';
+import 'package:devkit/views/regex_tester.dart';
 import 'package:flutter/material.dart';
 
-import 'hashes.dart';
-import 'string_transformations.dart';
+import 'views/hashes.dart';
+import 'views/string_transformations.dart';
 
 class Routes {
   static const String initial = home;

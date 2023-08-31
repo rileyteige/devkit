@@ -5,7 +5,7 @@ import 'package:devkit/sidebar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'toast.dart';
+import '../toast.dart';
 
 class StringTransformations extends StatefulWidget {
   const StringTransformations({super.key});
