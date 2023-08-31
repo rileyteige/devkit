@@ -63,7 +63,12 @@ class _RegexTesterState extends State<RegexTester> {
   Widget _renderMatchGroups(RegExpMatch match) {
     final children = <InlineSpan>[];
     final fullCapture = match.group(0) ?? '';
-    children.add(TextSpan(text: fullCapture));
+    children.add(TextSpan(
+      text: fullCapture,
+      style: TextStyle(
+        color: Theme.of(context).primaryColorLight,
+      ),
+    ));
     children.add(const TextSpan(text: '\n'));
 
     if (match.groupNames.isNotEmpty) {
@@ -120,21 +125,25 @@ class _RegexTesterState extends State<RegexTester> {
             ),
           ),
           if (_patternCtrl.text.isNotEmpty) ...[
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.outline,
+            Flexible(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
+                  borderRadius: BorderRadius.circular(4),
                 ),
-                borderRadius: BorderRadius.circular(4),
+                padding: const EdgeInsets.all(8),
+                child: _matches != null && _matches!.isEmpty
+                    ? const Text('No Matches')
+                    : _invalidPattern
+                        ? const Text('Invalid Pattern')
+                        : _matches == null
+                            ? Container()
+                            : SingleChildScrollView(
+                                child: _renderMatches(_matches!),
+                              ),
               ),
-              padding: const EdgeInsets.all(8),
-              child: _matches != null && _matches!.isEmpty
-                  ? const Text('No Matches')
-                  : _invalidPattern
-                      ? const Text('Invalid Pattern')
-                      : _matches == null
-                          ? Container()
-                          : _renderMatches(_matches!),
             ),
           ],
         ].intersperse(const SizedBox(height: 8)).toList(),
