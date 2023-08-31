@@ -44,8 +44,8 @@ class MyApp extends StatelessWidget {
                     return Sidebar(
                       navs: const [
                         NavigationListTile(
-                          route: Routes.hashes,
-                          title: Text('Hashes'),
+                          route: Routes.checksums,
+                          title: Text('Checksums'),
                         ),
                         NavigationListTile(
                           route: Routes.imageResizer,

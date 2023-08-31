@@ -2,7 +2,7 @@ import 'package:devkit/views/image_resizer.dart';
 import 'package:devkit/views/regex_tester.dart';
 import 'package:flutter/material.dart';
 
-import 'views/hashes.dart';
+import 'views/checksums.dart';
 import 'views/string_transformations.dart';
 
 class Routes {
@@ -11,7 +11,7 @@ class Routes {
   static const String home = '/';
   static const String imageResizer = '/ImageResizer';
   static const String stringTransformations = '/StringTransformations';
-  static const String hashes = '/Hashes';
+  static const String checksums = '/Checksums';
   static const String regexTester = '/RegexTester';
 
   static Route onGenerateRoute(RouteSettings settings) {
@@ -24,7 +24,7 @@ class Routes {
         home => const Center(child: Text('Choose a tool')),
         imageResizer => const ImageResizer(),
         stringTransformations => const StringTransformations(),
-        hashes => const Hashes(),
+        checksums => const Checksums(),
         regexTester => const RegexTester(),
         _ => Center(child: Text('Route not found: $name')),
       },

@@ -7,14 +7,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class Hashes extends StatefulWidget {
-  const Hashes({super.key});
+class Checksums extends StatefulWidget {
+  const Checksums({super.key});
 
   @override
-  State<Hashes> createState() => _HashesState();
+  State<Checksums> createState() => _ChecksumsState();
 }
 
-class _HashesState extends State<Hashes> {
+class _ChecksumsState extends State<Checksums> {
   PlatformFile? _pickedFile;
 
   Uint8List? get _bytes => _pickedFile?.bytes;
