@@ -22,6 +22,9 @@ enum StringTransformation {
   crazy,
   md5,
   singleLine,
+  html,
+  uri,
+  query,
 }
 
 Set<StringTransformation> exclusiveTransforms = {
@@ -29,6 +32,9 @@ Set<StringTransformation> exclusiveTransforms = {
   StringTransformation.lower,
   StringTransformation.crazy,
   StringTransformation.md5,
+  StringTransformation.html,
+  StringTransformation.uri,
+  StringTransformation.query,
 };
 
 extension Sets on Set<StringTransformation> {
@@ -59,6 +65,9 @@ class _StringTransformationsState extends State<StringTransformations> {
         StringTransformation.crazy => _toCrazy,
         StringTransformation.md5 => _toMD5,
         StringTransformation.singleLine => _toSingleLine,
+        StringTransformation.html => _encodeHtml,
+        StringTransformation.uri => _encodeUriComponent,
+        StringTransformation.query => _encodeUriQuery,
       };
 
   static String _toLower(String x) => x.toLowerCase();
@@ -70,6 +79,10 @@ class _StringTransformationsState extends State<StringTransformations> {
     }
     return buf.toString();
   }
+
+  static String _encodeHtml(String x) => const HtmlEscape().convert(x);
+  static String _encodeUriComponent(String x) => Uri.encodeComponent(x);
+  static String _encodeUriQuery(String x) => Uri.encodeQueryComponent(x);
 
   static String _toCrazy(String x) {
     StringBuffer buf = StringBuffer();
@@ -140,6 +153,9 @@ class _StringTransformationsState extends State<StringTransformations> {
         chip('Lower', StringTransformation.lower),
         chip('Upper', StringTransformation.upper),
         chip('Crazy', StringTransformation.crazy),
+        chip('HTML', StringTransformation.html),
+        chip('URI', StringTransformation.uri),
+        chip('Query', StringTransformation.query),
         chip('MD5', StringTransformation.md5),
         chip(
           'Single-Line',
