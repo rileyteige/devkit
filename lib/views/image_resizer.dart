@@ -60,20 +60,27 @@ class ResizeArgs {
 Future<Uint8List?> _resizeImage(Map<String, dynamic> argMap) async {
   final args = ResizeArgs.fromMap(argMap);
 
-  final decoded = image.decodeImage(args.image);
+  var decoded = image.decodeImage(args.image);
   if (decoded == null) {
     debugPrint('_resizeImage - Failed to deocde image');
     return null;
   }
 
-  final scaled = image.copyResize(
-    decoded,
-    width: args.targetWidth,
-    height: args.targetHeight,
-    interpolation: image.Interpolation.cubic,
-  );
+  if (decoded.format == image.Format.uint16) {
+    final uint8Bytes = image.encodeJpg(decoded);
+    decoded = image.decodeJpg(uint8Bytes);
+    if (decoded == null) {
+      debugPrint('_resizeImage - Failed to re-decode JPG image');
+      return null;
+    }
+  }
 
-  return image.encodePng(scaled);
+  final scaled = image.copyResize(decoded,
+      width: args.targetWidth,
+      height: args.targetHeight,
+      interpolation: image.Interpolation.cubic);
+
+  return image.encodeJpg(scaled);
 }
 
 class _ImageResizerState extends State<ImageResizer>
