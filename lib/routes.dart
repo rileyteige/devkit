@@ -5,6 +5,7 @@ import 'views/generators.dart';
 import 'views/image_resizer.dart';
 import 'views/regex_tester.dart';
 import 'views/string_transformations.dart';
+import 'views/qr_code.dart';
 
 class Routes {
   static const String initial = home;
@@ -15,6 +16,7 @@ class Routes {
   static const String checksums = '/Checksums';
   static const String regexTester = '/RegexTester';
   static const String generators = '/Generators';
+  static const String qrCode = '/QRCode';
 
   static Route onGenerateRoute(RouteSettings settings) {
     final name = settings.name;
@@ -29,6 +31,7 @@ class Routes {
         checksums => const Checksums(),
         regexTester => const RegexTester(),
         generators => const Generators(),
+        qrCode => const QRCode(),
         _ => Center(child: Text('Route not found: $name')),
       },
     );

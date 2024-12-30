@@ -63,6 +63,10 @@ class MyApp extends StatelessWidget {
                           route: Routes.stringTransformations,
                           title: Text('String Transforms'),
                         ),
+                        NavigationListTile(
+                          route: Routes.qrCode,
+                          title: Text('QR Code'),
+                        ),
                       ],
                     );
                   }),
