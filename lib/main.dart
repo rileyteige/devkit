@@ -52,6 +52,10 @@ class MyApp extends StatelessWidget {
                           title: Text('Generators'),
                         ),
                         NavigationListTile(
+                          route: Routes.imageGenerator,
+                          title: Text('Image Generator'),
+                        ),
+                        NavigationListTile(
                           route: Routes.imageResizer,
                           title: Text('Image Resizer'),
                         ),
