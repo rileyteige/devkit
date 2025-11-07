@@ -26,6 +26,7 @@ class Routes {
     return PageRouteBuilder(
       transitionDuration: Duration.zero,
       reverseTransitionDuration: Duration.zero,
+      maintainState: true,
       pageBuilder: (_, __, ___) => switch (name) {
         home => const Center(child: Text('Choose a tool')),
         imageResizer => const ImageResizer(),
