@@ -88,16 +88,36 @@ class _QRCodeState extends State<QRCode> {
                           numChannels: 4,
                         );
 
-                        // Resize to 150x150 pixels
-                        img.Image resizedImage = img.copyResize(
+                        // First resize the QR code to fit within the final image with padding
+                        // 5% padding means the QR code takes up 90% of the final size
+                        int qrSize =
+                            (150 * 0.9).round(); // 135 pixels for QR code
+                        img.Image resizedQR = img.copyResize(
                           rgbaImage,
-                          width: 200,
-                          height: 200,
+                          width: qrSize,
+                          height: qrSize,
                           interpolation: img.Interpolation.nearest,
                         );
 
-                        Uint8List jpegBytes =
-                            Uint8List.fromList(img.encodePng(resizedImage));
+                        // Create a new 150x150 white background image
+                        img.Image finalImage =
+                            img.Image(width: 150, height: 150);
+                        img.fill(finalImage,
+                            color: img.ColorRgb8(255, 255, 255));
+
+                        // Calculate padding to center the QR code
+                        int padding = ((150 - qrSize) / 2).round();
+
+                        // Composite the resized QR code onto the white background
+                        img.compositeImage(
+                          finalImage,
+                          resizedQR,
+                          dstX: padding,
+                          dstY: padding,
+                        );
+
+                        Uint8List jpegBytes = Uint8List.fromList(
+                            img.encodeJpg(finalImage, quality: 90));
 
                         // Save to temporary file
                         final directory =
