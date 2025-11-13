@@ -52,6 +52,7 @@ class _QRCodeState extends State<QRCode> {
         child: Column(
           children: [
             TextField(
+              autofocus: true,
               controller: _controller,
               decoration: const InputDecoration(
                 labelText: 'Enter text to generate QR Code',
@@ -137,7 +138,6 @@ class _QRCodeState extends State<QRCode> {
                       child: QrImageView(
                         data: _qrData,
                         size: 400.0,
-                        errorCorrectionLevel: QrErrorCorrectLevel.M,
                         backgroundColor: Colors.white,
                       ),
                     ),
